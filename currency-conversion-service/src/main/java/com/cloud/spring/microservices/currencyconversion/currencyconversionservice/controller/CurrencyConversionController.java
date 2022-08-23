@@ -23,9 +23,12 @@ public class CurrencyConversionController {
     @Autowired
     private CurrencyExchangeServiceProxy proxy;
 
-    @GetMapping("/currency-converter/from/{from}/to/{to}/quantity/{quantity}")
+    @GetMapping("/currency-conversion/from/{from}/to/{to}/quantity/{quantity}")
     public CurrencyConversionBean convertCurrency(@PathVariable String from, @PathVariable String to,
                                                   @PathVariable BigDecimal quantity) {
+
+        //CHANGE-KUBERNETES
+        logger.info("calculateCurrencyConversion called with {} to {} with {}", from, to, quantity);
 
         // Feign - Problem 1
         Map<String, String> uriVariables = new HashMap<>();
@@ -42,9 +45,12 @@ public class CurrencyConversionController {
                 quantity.multiply(response.getConversionMultiple()), response.getEnvironment());
     }
 
-    @GetMapping("/currency-converter-feign/from/{from}/to/{to}/quantity/{quantity}")
+    @GetMapping("/currency-conversion-feign/from/{from}/to/{to}/quantity/{quantity}")
     public CurrencyConversionBean convertCurrencyFeign(@PathVariable String from, @PathVariable String to,
                                                        @PathVariable BigDecimal quantity) {
+
+        //CHANGE-KUBERNETES
+        logger.info("calculateCurrencyConversionFeign called with {} to {} with {}", from, to, quantity);
 
         CurrencyConversionBean response = proxy.retrieveExchangeValue(from, to);
 

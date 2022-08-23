@@ -23,16 +23,27 @@ public class CurrencyExchangeController {
 
     @GetMapping("/currency-exchange/from/{from}/to/{to}")
     public CurrencyExchange retrieveExchangeValue
-            (@PathVariable String from, @PathVariable String to){
+            (@PathVariable String from, @PathVariable String to) {
 
-        CurrencyExchange currencyExchange =
-                repository.findByFromAndTo(from, to);
+        logger.info("retrieveExchangeValue called with {} to {}", from, to);
 
-        currencyExchange.setEnvironment(environment.getProperty("local.server.port"));
+        CurrencyExchange currencyExchange
+                = repository.findByFromAndTo(from, to);
 
-        logger.info("{}", currencyExchange);
+        if (currencyExchange == null) {
+            throw new RuntimeException
+                    ("Unable to Find data for " + from + " to " + to);
+        }
+
+        String port = environment.getProperty("local.server.port");
+
+        //CHANGE-KUBERNETES
+        // HOSTNAME is the name of the pod
+        String host = environment.getProperty("HOSTNAME");
+        String version = "v11";
+
+        currencyExchange.setEnvironment(port + " " + version + " " + host);
 
         return currencyExchange;
-
     }
 }
